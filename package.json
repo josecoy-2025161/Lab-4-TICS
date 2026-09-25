@@ -1,0 +1,25 @@
+{
+  "name": "lab-4-tics",
+  "version": "1.0.0",
+  "description": "Integrar consumo de APIs, manipulación del DOM y control de calidad del código mediante Husky y ESLint en una mini aplicación web.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josecoy-2025161/Lab-4-TICS.git"
+  },
+  "keywords": [],
+  "author": "José Angel Coy Mucía",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josecoy-2025161/Lab-4-TICS/issues"
+  },
+  "homepage": "https://github.com/josecoy-2025161/Lab-4-TICS#readme",
+  "devDependencies": {
+    "eslint": "^10.11.0",
+    "husky": "^9.1.7"
+  }
+}
