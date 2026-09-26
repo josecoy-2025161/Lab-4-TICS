@@ -1,53 +1,77 @@
-// Variables del DOM
-const userContainer = document.getElementById('userContainer');
-const searchInput = document.getElementById('searchInput');
+const usuarioContainer = document.getElementById('usuario-container');
+const buscarInput = document.getElementById('buscar-input');
+const mensajeContainer = document.getElementById('mensaje-container');
 
-let usersData = []; // Array para almacenar los datos originales
+let usuariosData = [];
 
-// Obtener datos desde una API pública con fetch()
-async function fetchUsers() {
+// Función para obtener las dos primeras letras del nombre para el avatar
+function getIniciales(nombre) {
+    return nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+}
+
+// Colores para los avatares
+const coloresArray = ['#20c997', '#fcc419', '#ff922b', '#d6336c', '#339af0'];
+
+async function fetchUsuarios() {
     try {
+        mensajeContainer.innerHTML = '';
         const response = await fetch('https://jsonplaceholder.typicode.com/users');
         if (!response.ok) {
-            throw new Error('Error al obtener los datos');
+            throw new Error('Error al conectar con la API');
         }
-        usersData = await response.json();
-        renderUsers(usersData); // Mostrar datos dinámicamente
+        usuariosData = await response.json();
+        renderUsuarios(usuariosData);
     } catch (error) {
-        console.error('Hubo un problema con la petición:', error);
+        // Mostrar mensaje si no se logran cargar los usuarios
+        usuarioContainer.innerHTML = '';
+        mensajeContainer.innerHTML = '<div class="error-mensaje">No se pudieron cargar los usuarios. Por favor, verifica tu conexión a internet e inténtalo de nuevo.</div>';
     }
 }
 
-// Función para renderizar los usuarios en el DOM
-function renderUsers(users) {
-    userContainer.innerHTML = ''; // Limpiar contenedor
+function renderUsuarios(usuariosList) {
+    usuarioContainer.innerHTML = '';
+    mensajeContainer.innerHTML = '';
 
-    users.forEach(user => {
-        // Crear elemento de tarjeta
-        const card = document.createElement('div');
-        card.classList.add('card');
+    // Mostrar si la búsqueda no arroja resultados
+    if (usuariosList.length === 0) {
+        mensajeContainer.innerHTML = '<div class="vacio-mensaje">No se encontraron usuarios que coincidan con la búsqueda.</div>';
+        return;
+    }
 
-        card.innerHTML = `
-            <h3>${user.name}</h3>
-            <p>Email: ${user.email}</p>
-            <p>Ciudad: ${user.address.city}</p>
+    usuariosList.forEach((usuario, index) => {
+        const userCard = document.createElement('div');
+        userCard.className = 'usuario-card';
+
+        const iniciales = getIniciales(usuario.name);
+        const bgColor = coloresArray[index % coloresArray.length];
+
+        // Se usan backticks (template literals) para inyectar HTML
+        userCard.innerHTML = `
+            <div class="avatar-circulo" style="background-color: ${bgColor}">${iniciales}</div>
+            <h3>${usuario.name}</h3>
+            <div class="username-texto">@${usuario.username.toLowerCase()}</div>
+            <div class="info-fila">✉️ ${usuario.email.toLowerCase()}</div>
+            <div class="info-fila">📞 ${usuario.phone.split(' ')[0]}</div>
+            <div class="info-fila">📍 ${usuario.address.city}</div>
+            <div class="info-fila">🏢 ${usuario.company.name}</div>
         `;
 
-        userContainer.appendChild(card);
+        usuarioContainer.appendChild(userCard);
     });
 }
 
-// Interacción básica: Filtro de búsqueda
-searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
+// Filtro en tiempo real por nombre, usuario o correo electrónico
+buscarInput.addEventListener('input', (e) => {
+    const searchTermino = e.target.value.toLowerCase();
 
-    // Filtrar usuarios por nombre
-    const filteredUsers = usersData.filter(user =>
-        user.name.toLowerCase().includes(searchTerm)
+    const filteredUsuarios = usuariosData.filter(usuario =>
+        usuario.name.toLowerCase().includes(searchTermino) ||
+        usuario.username.toLowerCase().includes(searchTermino) ||
+        usuario.email.toLowerCase().includes(searchTermino)
     );
 
-    renderUsers(filteredUsers);
+    renderUsuarios(filteredUsuarios);
 });
 
-// Inicializar la aplicación
-fetchUsers();
+// Inicializar
+fetchUsuarios();
